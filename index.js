@@ -29,6 +29,12 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+app.get('/api/hello', (req, res) => {
+
+  res.send("ㅇ응답 완료!");
+})
+
+
 // 회원가입을 위한 라우터
 app.post('/api/users/register', (req, res) => {
 
