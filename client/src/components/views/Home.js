@@ -4,10 +4,14 @@ import ArticleList from 'components/ArticleList';
 import AddArticle from 'components/AddArticle';
 
 function Home() {
+
+    const getArticles = async () => {
+        const res = await axios.get('/api/articles');
+        console.log(res.data);
+    }
     
     useEffect(() => {
-        axios.get('/api/hello')
-             .then((res) => console.log(res.data));
+        getArticles();
     }, []);
 
     return (

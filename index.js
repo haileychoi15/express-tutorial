@@ -3,9 +3,11 @@ const app = express()
 const port = 5000
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const colors = require('colors')
 const config = require('./server/config/key')
 const { auth } = require('./server/middleware/auth')
 const { User } = require('./server/models/User')
+const { Article } = require('./server/models/Article')
 
 // application/x-www-form-urlencoded 으로 온 데이터 분석해서 가져옴
 app.use(bodyParser.urlencoded({extended: true}));
@@ -19,20 +21,79 @@ const mongoose = require('mongoose')
 const { json } = require('body-parser')
 
 // Add your connection string into your application code
-mongoose.connect(config.mongoURI, {
-    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false // 에러방지
-}).then((() => console.log('MongoDB connected...')))
-  .catch((e) => console.log(e))
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+const contectDB = async () => {
+  try {
+    const conn = await mongoose.connect(config.mongoURI, {
+      useNewUrlParser: true, 
+      useUnifiedTopology: true, 
+      useCreateIndex: true, 
+      useFindAndModify: false // 에러방지
+    });
+    console.log(`MongoDB Connected to ${conn.connection.host}`.cyan.underline.bold);
+
+  } catch(err) {
+    console.log(`Error : ${err.message}`.red);
+  }
+}
+
+contectDB();
+
+// ================== ARTICLE ====================
+
+app.delete('/api/articles/:id', (req, res) => {
+
+  Article.findById(req.params.id, (err, article) => {
+
+    if(err) return res.status(500).json({
+      success: false,
+      error: "Server error"
+    });
+
+    if(!article) {
+      return res.status(404).json({
+        success: false,
+        message: "No article found."
+      })
+    }
+    
+    article.remove();
+
+    return res.status(200).json({
+      success: true,
+      data: {}
+    })
+  });
 })
 
-app.get('/api/hello', (req, res) => {
+app.get('/api/articles', (req, res) => {
 
-  res.send("ㅇ응답 완료!");
+  Article.find((err, doc) => {
+    if(err) return res.json({ success: false, err });
+    return res.status(200).json({
+      success: true,
+      count: doc.length,
+      data: doc
+    })
+  });
+
 })
 
+app.post('/api/articles', (req, res) => {
+
+  const article = new Article(req.body);
+
+  article.save((err, doc) => {
+    if(err) return res.json({ success: false, err })
+    return res.status(200).json({
+      success: true
+    })
+  })
+
+})
+
+
+// ================== USER ====================
 
 // 회원가입을 위한 라우터
 app.post('/api/users/register', (req, res) => {
@@ -40,7 +101,7 @@ app.post('/api/users/register', (req, res) => {
   // 회원가입 할 때 필요한 정보들을 client에서 가져오면 
   // 그것들을 데이터베이스에 넣어준다.
 
-  const user = new User(req.body)
+  const user = new User(req.body);
 
   // 이 단계에서 userSchema 에서 암호화 이루어진다. 코드는 User 파일에 있음
 
@@ -59,7 +120,7 @@ app.post('/api/users/login', (req, res) => {
     if(!user) {
       return res.json({
         loginSuccess: false,
-        message: "없는 이메일입니다."
+        message: "No email found"
       })
     }
 
