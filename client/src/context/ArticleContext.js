@@ -1,22 +1,11 @@
-import React, { createContext, useReducer, useRef } from 'react';
+import React, { createContext, useReducer } from 'react';
+import axios from 'axios';
 
-const initialState = [
-    {
-        id: 1,
-        title: "first article",
-        content: "first bla bla",
-    },
-    {
-        id: 2,
-        title: "second article",
-        content: "second bla bla",
-    },
-    {
-        id: 3,
-        title: "third article",
-        content: "third bla bla",
-    },
-];
+const initialState = {
+    articles: [],
+    error: null,
+    loading: true
+}
 
 // create context
 export const ArticleContext = createContext(initialState);
@@ -24,12 +13,29 @@ export const ArticleContext = createContext(initialState);
 // article reducer
 const ArticleReducer = (state, action) => {
     switch (action.type) {
-        case "DELETE_ARTICLE":           
-            return state.filter(article => article.id !== action.payload);
-        case "ADD_ARTICLE":           
-            return state.concat(action.payload); // [...state, action.article];
+        case "GET_ARTICLES":           
+            return {
+                ...state,
+                loading: false,
+                articles: action.payload
+            }
+        case "DELETE_ARTICLE":      
+            return {
+                ...state, 
+                articles: state.articles.filter(article => article._id !== action.payload)
+            }     
+        case "ADD_ARTICLE":     
+            return {
+                ...state, 
+                articles: state.articles.concat(action.payload)
+            }      
+        case "ERROR":           
+            return {
+                ...state,
+                error: action.payload
+            }
         default:
-            return state;
+            return state.articles;
     }
 }
 
@@ -37,30 +43,65 @@ const ArticleReducer = (state, action) => {
 export const ArticleProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(ArticleReducer, initialState);
-    const articleId = useRef(3);
 
     // actions
-    function deleteArticle(id) {
-        dispatch({
-            type: "DELETE_ARTICLE",
-            payload: id
-        });
+    async function getArticles() {
+        try {
+            const { data : { data } } = await axios.get("/api/articles");
+            console.log('ArticleContext.js : ', data);
+            dispatch({
+                type: "GET_ARTICLES",
+                payload: data
+            });
+        } catch(err) {
+            dispatch({
+                type: "ERROR",
+                payload: err.response.data.error
+            });
+        }
     }
 
-    function addArticle(article) {
-        dispatch({
-            type: "ADD_ARTICLE",
-            payload: {
-                id: articleId.current + 1,
-                ...article
+    async function deleteArticle(id) {
+        try {
+            await axios.delete(`/api/articles/${id}`);
+            dispatch({
+                type: "DELETE_ARTICLE",
+                payload: id
+            });
+        } catch(err) {
+            dispatch({
+                type: "ERROR",
+                payload: err.response.data.error
+            });
+        }
+    }
+
+    async function addArticle(article) {
+        const config = {
+            headers: {
+                "Content-Type": "application/json" 
             }
-        });
-        articleId.current += 1;
+        }
+        try {
+            const { data : { data } } = await axios.post("/api/articles", article, config);
+            dispatch({
+                type: "ADD_ARTICLE",
+                payload: data
+            });
+        } catch(err) {
+            dispatch({
+                type: "ERROR",
+                payload: err.response.data.error
+            });
+        }
     }
 
     return (
         <ArticleContext.Provider value={{
-            articles: state, 
+            articles: state.articles, 
+            error: state.error,
+            loading: state.loading,
+            getArticles,
             deleteArticle,
             addArticle
         }}>

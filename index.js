@@ -41,14 +41,18 @@ contectDB();
 
 // ================== ARTICLE ====================
 
+const throwServerError = (res) => {
+    res.status(500).json({
+      success: false,
+      error: "Server error"
+    })
+}
+
 app.delete('/api/articles/:id', (req, res) => {
 
   Article.findById(req.params.id, (err, article) => {
 
-    if(err) return res.status(500).json({
-      success: false,
-      error: "Server error"
-    });
+    if(err) return throwServerError(res);
 
     if(!article) {
       return res.status(404).json({
@@ -69,7 +73,9 @@ app.delete('/api/articles/:id', (req, res) => {
 app.get('/api/articles', (req, res) => {
 
   Article.find((err, doc) => {
-    if(err) return res.json({ success: false, err });
+    
+    if(err) return throwServerError(res);
+
     return res.status(200).json({
       success: true,
       count: doc.length,
@@ -84,9 +90,13 @@ app.post('/api/articles', (req, res) => {
   const article = new Article(req.body);
 
   article.save((err, doc) => {
-    if(err) return res.json({ success: false, err })
+    
+if(err) return throwServerError(res);
+
     return res.status(200).json({
-      success: true
+      success: true,
+      count: doc.length,
+      data: doc
     })
   })
 

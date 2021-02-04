@@ -7,9 +7,9 @@ function Article({ article }) {
 
     return (
         <li>
-            <h1><span>{article.id}</span>{article.title}</h1>
+            <h1>{article.title}</h1>
             <p>{article.content}</p>
-            <button onClick={() => deleteArticle(article.id)}>삭제</button>
+            <button onClick={() => deleteArticle(article._id)}>삭제</button>
         </li>
     )
 }
