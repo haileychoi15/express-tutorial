@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import ArticleList from 'components/ArticleList';
+import AddArticle from 'components/AddArticle';
 
 function Home() {
     
@@ -11,6 +12,7 @@ function Home() {
 
     return (
         <div>
+            <AddArticle />
             <ArticleList />
         </div>
     )

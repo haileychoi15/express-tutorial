@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useRef } from 'react';
 
 const initialState = [
     {
@@ -27,7 +27,7 @@ const ArticleReducer = (state, action) => {
         case "DELETE_ARTICLE":           
             return state.filter(article => article.id !== action.payload);
         case "ADD_ARTICLE":           
-            return state.concat(action.article); // [...state, action.article];
+            return state.concat(action.payload); // [...state, action.article];
         default:
             return state;
     }
@@ -37,6 +37,7 @@ const ArticleReducer = (state, action) => {
 export const ArticleProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(ArticleReducer, initialState);
+    const articleId = useRef(3);
 
     // actions
     function deleteArticle(id) {
@@ -49,8 +50,12 @@ export const ArticleProvider = ({ children }) => {
     function addArticle(article) {
         dispatch({
             type: "ADD_ARTICLE",
-            payload: article
+            payload: {
+                id: articleId.current + 1,
+                ...article
+            }
         });
+        articleId.current += 1;
     }
 
     return (
