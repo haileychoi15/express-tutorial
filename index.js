@@ -7,7 +7,6 @@ const config = require('./server/config/key')
 const { auth } = require('./server/middleware/auth')
 const { User } = require('./server/models/User')
 
-
 // application/x-www-form-urlencoded 으로 온 데이터 분석해서 가져옴
 app.use(bodyParser.urlencoded({extended: true}));
 
