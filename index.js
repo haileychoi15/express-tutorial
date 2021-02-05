@@ -141,7 +141,7 @@ app.post('/api/users/login', (req, res) => {
 
         // user를 위한 token 생성
         user.generateToken((err, user) => {
-          if(err) return res.status(400).send(err)
+          if(err) return res.status(400).send(err)  
 
           // token을 저장한다. 어디 ? 쿠키, 로컬스토리지 ... 
             res.cookie('x_auth', user.token)
