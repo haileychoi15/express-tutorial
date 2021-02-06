@@ -1,11 +1,12 @@
 import React from 'react'
 
-function Footer() {
+function Dashboard() {
     return (
         <div>
-            foote
+            dashboard
         </div>
     )
 }
 
-export default Footer
+export default Dashboard
+

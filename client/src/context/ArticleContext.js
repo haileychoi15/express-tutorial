@@ -48,7 +48,7 @@ export const ArticleProvider = ({ children }) => {
     async function getArticles() {
         try {
             const { data : { data } } = await axios.get("/api/articles");
-            console.log('ArticleContext.js : ', data);
+            //console.log('ArticleContext.js : ', data);
             dispatch({
                 type: "GET_ARTICLES",
                 payload: data

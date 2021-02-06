@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { UserContext } from 'context/UserContext';
+import { AuthContext } from 'context/AuthContext';
 
 function Login() {
 
-    const { loginUser } = useContext(UserContext);
+    const { loginUser } = useContext(AuthContext);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,8 +21,6 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        //console.log('Login.js : ', email, password);
-
         loginUser(email, password);
     }
 
