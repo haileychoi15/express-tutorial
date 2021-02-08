@@ -53,10 +53,10 @@ export const AuthProvider = ({ children }) => {
                     payload: data.user
                 });
 
-                return callback({ loggedIn: true });
+                return callback({ loggedIn: true, isAdmin: data.user.isAdmin });
             } 
             else {
-                return callback({ loggedIn: false });
+                return callback({ loggedIn: false, isAdmin: false });
             }
 
         } catch(err) {
@@ -99,11 +99,12 @@ export const AuthProvider = ({ children }) => {
     async function logoutUser() {
         try {
             const { data } = await axios.get("/api/users/logout");
-            dispatch({
-                type: "LOGOUT_USER"
-            });
-
             if (data.logoutSuccess) {
+
+                dispatch({
+                    type: "LOGOUT_USER"
+                });
+
                 history.push("/");
             }
 

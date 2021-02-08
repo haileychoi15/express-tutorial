@@ -17,7 +17,7 @@ function App() {
           <AuthProvider>
             <Navigation />
             <Switch>
-              <Route exact path="/" component={Home} />
+              <Route exact path="/" component={Auth(Home, null)} />
               <Route exact path="/dashboard" component={Auth(Dashboard, true)} />
               <Route exact path="/login" component={Auth(Login, false)} />
               <Route exact path="/register" component={Auth(Register, false)} />

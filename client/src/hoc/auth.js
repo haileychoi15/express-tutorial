@@ -10,12 +10,13 @@ export default function Auth (Component, option, adminRoute = null) {
 
     function AuthficationCheck () {
 
-        const { user, authUser } = useContext(AuthContext);
+        const { authUser } = useContext(AuthContext);
         const history = useHistory();
 
-        const handleRoutes = (loggedIn) => {
+        const handleRoutes = (loggedIn, isAdmin) => {
+           
             if(loggedIn) {
-                if(adminRoute && !user.isAdmin) {
+                if(adminRoute && !isAdmin) {
                     history.push("/");
                 } 
                 else {
@@ -28,9 +29,9 @@ export default function Auth (Component, option, adminRoute = null) {
         }
         
         useEffect(() => {
-            authUser(({ loggedIn }) => {
+            authUser(({ loggedIn, isAdmin }) => {
                 console.log('hoc auth.js loggedIn, ',loggedIn);
-                handleRoutes(loggedIn);
+                handleRoutes(loggedIn, isAdmin);
             });
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []);
