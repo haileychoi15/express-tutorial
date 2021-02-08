@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { withRouter } from "react-router-dom";
 
 function Dashboard() {
     return (
@@ -8,5 +9,5 @@ function Dashboard() {
     )
 }
 
-export default Dashboard
+export default withRouter(Dashboard);
 

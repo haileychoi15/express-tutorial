@@ -3,18 +3,20 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 const initialState = {
+    loggedIn: false,
     isAuth: false,
-    user: []
+    user: {}
 };
 
 // create context
 export const AuthContext = createContext(initialState);
 
-const AuthReducer = (state = {} , action) => {
+const AuthReducer = (state, action) => {
     switch (action.type) {
         case "AUTH_USER":           
             return {
                 ...state,
+                loggedIn: true,
                 isAuth: true,
                 user: action.payload
             }
@@ -25,15 +27,12 @@ const AuthReducer = (state = {} , action) => {
         case "LOGIN_USER":           
             return {
                 ...state,
+                loggedIn: true,
                 isAuth: true,
                 user: action.payload
             }
         case "LOGOUT_USER":           
-            return {
-                ...state,
-                isAuth: false,
-                user: []
-            };
+            return initialState;
         default:
             return state;
     }
@@ -44,34 +43,44 @@ export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
     const history = useHistory();
 
-    async function authUser() {
+    async function authUser(callback) {
         try {
             const { data } = await axios.get("/api/users/auth");
-            console.log('AuthContext.js authUser : ',data.user);
-            dispatch({
-                type: "AUTH_USER",
-                payload: data.user
-            });
+            
+            if(data.authSuccess) {
+                dispatch({
+                    type: "AUTH_USER",
+                    payload: data.user
+                });
+
+                return callback({ loggedIn: true });
+            } 
+            else {
+                return callback({ loggedIn: false });
+            }
 
         } catch(err) {
-
+            console.log(err);
         }  
     }
 
     async function loginUser(email, password) {
         try {
             const { data } = await axios.post("/api/users/login", { email, password });
-            dispatch({
-                type: "LOGIN_USER",
-                payload: data.user
-            });
+            console.log(data);
 
             if (data.loginSuccess) {
+
+                dispatch({
+                    type: "LOGIN_USER",
+                    payload: data.user
+                });
+
                 history.push("/");
             }
 
         } catch(err) {
-
+            console.log(err);
         }  
     }
 
@@ -83,7 +92,7 @@ export const AuthProvider = ({ children }) => {
             }
 
         } catch(err) {
-
+            console.log(err);
         }  
     }
 
@@ -99,12 +108,13 @@ export const AuthProvider = ({ children }) => {
             }
 
         } catch(err) {
-
+            console.log(err);
         }  
     }
 
     return (
         <AuthContext.Provider value={{
+            loggedIn: state.loggedIn,
             isAuth: state.isAuth,
             user: state.user, 
             loginUser,

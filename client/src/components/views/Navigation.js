@@ -4,11 +4,24 @@ import { AuthContext } from 'context/AuthContext';
 
 function Navigation() {
 
-    const { user, logoutUser } = useContext(AuthContext);
-    console.log('Navigation.js user: ', user);
+    const { loggedIn, logoutUser } = useContext(AuthContext);
 
     return (
         <div>
+            {loggedIn
+            ? 
+            <ul>
+                <li>
+                    <Link to="/">Home</Link>
+                </li>
+                <li>
+                    <Link to="/dashboard">Dashboard</Link>
+                </li>
+                <li>
+                    <button onClick={logoutUser}>logout</button>
+                </li>
+            </ul>
+            :
             <ul>
                 <li>
                     <Link to="/">Home</Link>
@@ -19,10 +32,8 @@ function Navigation() {
                 <li>
                     <Link to="/register">Register</Link>
                 </li>
-                <li>
-                    <button onClick={logoutUser}>logout</button>
-                </li>
             </ul>
+            }
         </div>
     )
 }
