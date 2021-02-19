@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 export default function Auth (Component, option, adminRoute = null) {
 
     //option
+    // null => 아무나 출입 가능
     //1. true => 로그인한 유저만 가능
     //2. false => 로그인한 유저는 불가능
 

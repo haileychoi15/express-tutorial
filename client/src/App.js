@@ -9,6 +9,7 @@ import Navigation from "components/views/Navigation";
 import { ArticleProvider } from "context/ArticleContext";
 import { AuthProvider } from "context/AuthContext";
 import Auth from "hoc/auth";
+import NoMatch from 'components/views/NoMatch';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route exact path="/login" component={Auth(Login, false)} />
               <Route exact path="/register" component={Auth(Register, false)} />
               <Route exact path="/admin" component={Auth(Admin, true, true)} />
+              <Route path="*" component={NoMatch} />
             </Switch>
           </AuthProvider>
       </Router>
